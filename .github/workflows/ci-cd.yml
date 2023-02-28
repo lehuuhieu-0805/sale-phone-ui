@@ -1,0 +1,27 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Sale Phone UI CI-CD
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+          - name: Deploy  to server
+            uses: appleboy/ssh-action@master
+            with: # We set all our secrets here for the action, these won't be shown in the action logs
+              host: ${{ secrets.HOST }}
+              username: ${{ secrets.USERNAME }}
+              password: ${{ secrets.PASSWORD }}
+              port: ${{ secrets.PORT }}
+              script: |
+                  cd /var/www/sale-phone-ui/html # we move into our app's folder
+                  git pull # we pull any changes from git
+                  npm install # we install any missing dependencies and remove all dependencies not necessary
+                  npm run build # we build our app
