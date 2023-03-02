@@ -8,7 +8,8 @@ import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 import AlertMessage from '../../../components/AlertMessage';
 import { api } from '../../../constants';
-import { save } from '../../../stores/userSlice';
+import { updateQuantityCart } from '../../../stores/quantityCart';
+import { saveUser } from '../../../stores/userSlice';
 
 const LoginSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
@@ -53,13 +54,22 @@ function Login({ open, setOpen, handleChangeDialogMode }) {
           Authorization: `Bearer ${res.data.access_token}`
         }
       }).then((res) => {
-        const action = save(res.data);
+        const action = saveUser(res.data);
         dispatch(action);
-        setSeverity('success');
-        setMessageAlert('Login successfully');
-        setOpenAlert(true);
-        setOpen(false);
-        reset();
+        axios({
+          method: 'GET',
+          url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts/${res.data.username}`,
+        }).then((res) => {
+          const action = updateQuantityCart(res.data.length);
+          dispatch(action);
+          setSeverity('success');
+          setMessageAlert('Login successfully');
+          setOpenAlert(true);
+          setOpen(false);
+          reset();
+        }).catch((error) => {
+          console.log(error);
+        });
       }).catch((error) => {
         console.log(error);
         setSeverity('error');

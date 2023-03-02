@@ -6,11 +6,11 @@ const user = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    save: (state, action) => {
+    saveUser: (state, action) => {
       state = action.payload;
       return state;
     },
-    remove: (state) => {
+    removeUser: (state) => {
       state = initialState;
       return state;
     }
@@ -18,5 +18,5 @@ const user = createSlice({
 });
 
 const { reducer, actions } = user;
-export const { save, remove } = actions;
+export const { saveUser, removeUser } = actions;
 export default reducer;

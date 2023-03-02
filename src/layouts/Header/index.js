@@ -1,24 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { api } from './../../constants';
+import { removeQuantityCart, updateQuantityCart } from './../../stores/quantityCart';
+import { removeUser, saveUser } from './../../stores/userSlice';
 import Login from './Login';
 import Register from './Register';
-import { api } from './../../constants';
-import { remove, save } from './../../stores/userSlice';
 
 function Header() {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user);
+  const quantityCart = useSelector(state => state.quantityCart);
+  const token = localStorage.getItem('token');
 
   const [openLoginDialog, setOpenLoginDialog] = useState(false);
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (!token) {
-      const action = remove();
+      let action = removeUser();
+      dispatch(action);
+
+      action = updateQuantityCart(0);
       dispatch(action);
     } else {
       axios({
@@ -28,8 +34,20 @@ function Header() {
           Authorization: `Bearer ${token}`
         }
       }).then((res) => {
-        const action = save(res.data);
+        const action = saveUser(res.data);
         dispatch(action);
+
+        axios({
+          method: 'GET',
+          url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts/${res.data.username}`,
+        }).then((res) => {
+          console.log(res);
+          const action = updateQuantityCart(res.data.length);
+          dispatch(action);
+        }).catch((error) => {
+          console.log(error);
+        });
+
       }).catch((error) => {
         console.log(error);
       });
@@ -77,10 +95,23 @@ function Header() {
             <div className='d-flex'>
               {currentUser
                 ? (<>
+                  <div className='cart-icon' style={{ position: 'relative' }}>
+                    <span className='count' style={{ position: 'absolute', right: 8, color: 'red', fontWeight: 'bold' }}>{quantityCart}</span>
+                    <ShoppingCartOutlinedIcon style={{
+                      marginTop: 8, marginRight: 16
+                    }} sx={{
+                      '&:hover': {
+                        cursor: 'pointer'
+                      }
+                    }} />
+                  </div>
                   <a class='navbar-brand'>{currentUser.username}</a>
                   <button class='btn btn-outline-success' onClick={() => {
                     localStorage.clear();
-                    const action = remove();
+                    let action = removeUser();
+                    dispatch(action);
+
+                    action = removeQuantityCart();
                     dispatch(action);
                   }}>Logout</button>
                 </>)
