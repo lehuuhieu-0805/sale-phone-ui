@@ -22,7 +22,7 @@ jobs:
               port: ${{ secrets.PORT }}
               script: |
                   cd ~/sale-phone-ui # we move into our app's folder
-                  git pull # we pull any changes from git
+                  git pull origin master # we pull any changes from git
                   npm install # we install any missing dependencies and remove all dependencies not necessary
                   npm run build # we build our app
                   sudo cp -r ./build/. /var/www/sale-phone-ui/html/
