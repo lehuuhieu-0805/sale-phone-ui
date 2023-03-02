@@ -3,8 +3,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Login from '../../pages/Home/Login';
-import Register from '../../pages/Home/Register';
+import Login from './Login';
+import Register from './Register';
 import { api } from './../../constants';
 import { remove, save } from './../../stores/userSlice';
 
