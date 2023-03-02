@@ -8,7 +8,7 @@ import store from './stores/store';
 function App() {
   const path = window.location.pathname;
 
-  const Layout = path === '/' || path === '/register' || path === '/login' ? Fragment : Layouts;
+  const Layout = path === '/register' || path === '/login' ? Fragment : Layouts;
 
   return (
     <Provider store={store}>
