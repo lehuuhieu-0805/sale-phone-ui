@@ -106,9 +106,11 @@ function Header() {
                       '&:hover': {
                         cursor: 'pointer'
                       }
+                    }} onClick={() => {
+                      window.location.href = '/cart';
                     }} />
                   </div>
-                  <a class='navbar-brand'>{currentUser.username}</a>
+                  <a class='navbar-brand' style={{ fontWeight: 'bold' }}>{currentUser.username}</a>
                   <button class='btn btn-outline-success' onClick={() => {
                     localStorage.clear();
                     let action = removeUser();
@@ -116,6 +118,7 @@ function Header() {
 
                     action = removeQuantityCart();
                     dispatch(action);
+                    window.location.href = '/home';
                   }}>Logout</button>
                 </>)
                 : (<button class='btn btn-primary' onClick={() => setOpenLoginDialog(true)}>Login</button>)}

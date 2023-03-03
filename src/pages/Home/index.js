@@ -27,6 +27,62 @@ function Home() {
     });
   }, []);
 
+  const handleAddToCart = (phone) => {
+    if (currentUser) {
+      axios({
+        method: 'GET',
+        url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones/${phone.id}`,
+      }).then((res) => {
+        axios({
+          method: 'POST',
+          url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts?type=up`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+          data: {
+            id: res.data.id,
+            name: res.data.name,
+            price: res.data.price,
+            quantity: 1,
+            image: res.data.image,
+            status: res.data.status
+          }
+        }).then(() => {
+
+          axios({
+            method: 'GET',
+            url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts/${currentUser.username}`,
+          }).then((res) => {
+            console.log(res);
+            const action = updateQuantityCart(res.data.length);
+            dispatch(action);
+
+            setSeverity('success');
+            setMessageAlert('Add to cart successfully');
+            setOpenAlert(true);
+          }).catch((error) => {
+            console.log(error);
+          });
+
+        }).catch((error) => {
+          console.log(error);
+          setSeverity('error');
+          setMessageAlert('Add to cart failed');
+          setOpenAlert(true);
+        });
+      }).catch((error) => {
+        console.log(error);
+        setSeverity('error');
+        setMessageAlert('Add to cart failed');
+        setOpenAlert(true);
+      });
+    } else {
+      setSeverity('error');
+      setMessageAlert('Please login to add to cart');
+      setOpenAlert(true);
+    }
+  };
+
   return (
     <div className='mt-2'>
       <Grid container spacing={2}>
@@ -48,55 +104,7 @@ function Home() {
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button onClick={() => {
-                  axios({
-                    method: 'GET',
-                    url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones/${phone.id}`,
-                  }).then((res) => {
-                    axios({
-                      method: 'POST',
-                      url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts/add`,
-                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                      },
-                      data: {
-                        id: res.data.id,
-                        name: res.data.name,
-                        price: res.data.price,
-                        quantity: 1,
-                        image: res.data.image,
-                        status: res.data.status
-                      }
-                    }).then(() => {
-
-                      axios({
-                        method: 'GET',
-                        url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts/${currentUser.username}`,
-                      }).then((res) => {
-                        console.log(res);
-                        const action = updateQuantityCart(res.data.length);
-                        dispatch(action);
-
-                        setSeverity('success');
-                        setMessageAlert('Add to cart successfully');
-                        setOpenAlert(true);
-                      }).catch((error) => {
-                        console.log(error);
-                      });
-
-                    }).catch((error) => {
-                      console.log(error);
-                      setSeverity('error');
-                      setMessageAlert('Add to cart failed');
-                      setOpenAlert(true);
-                    });
-                  }).catch((error) => {
-                    console.log(error);
-                    setSeverity('error');
-                    setMessageAlert('Add to cart failed');
-                    setOpenAlert(true);
-                  });
-                }}>
+                <Button onClick={() => handleAddToCart(phone)}>
                   Add to cart
                 </Button>
               </CardActions>
@@ -108,6 +116,6 @@ function Home() {
       <AlertMessage openAlert={openAlert} setOpenAlert={setOpenAlert} alertMessage={messageAlert} severity={severity} />
     </div>
   );
-}
+};
 
 export default Home;
