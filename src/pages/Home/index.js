@@ -19,7 +19,7 @@ function Home() {
   useEffect(() => {
     axios({
       method: 'GET',
-      url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones`,
+      url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones?status=active`,
     }).then((res) => {
       setListPhone(res.data);
     }).catch((error) => {
@@ -99,9 +99,14 @@ function Home() {
                 <Typography variant='h5' component='div'>
                   {phone.name}
                 </Typography>
-                <Typography variant='body1' fontWeight='bold'>
-                  {phone.price}$
-                </Typography>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant='body1' fontWeight='bold'>
+                    Price: {phone.price}$
+                  </Typography>
+                  <Typography variant='body1'>
+                    Quantity: {phone.quantity}
+                  </Typography>
+                </div>
               </CardContent>
               <CardActions>
                 <Button onClick={() => handleAddToCart(phone)}>
