@@ -4,6 +4,7 @@ import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, 
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
+import AlertMessage from '../../components/AlertMessage';
 import { api } from './../../constants';
 
 function Cart() {
@@ -11,6 +12,9 @@ function Cart() {
   const [reloadCart, setReloadCart] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalQuantity, setTotalQuantity] = useState(0);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [messageAlert, setMessageAlert] = useState('');
+  const [severity, setSeverity] = useState('success');
 
   const token = localStorage.getItem('token');
   let decodeToken = null;
@@ -90,6 +94,30 @@ function Cart() {
     });
   };
 
+  const handleCheckOut = () => {
+    axios({
+      method: 'POST',
+      url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/orders`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      data: {
+        totalPrice,
+        totalQuantity
+      }
+    }).then(() => {
+      setSeverity('success');
+      setMessageAlert('Checkout successfully');
+      setOpenAlert(true);
+      setReloadCart(!reloadCart);
+    }).catch((error) => {
+      console.log(error);
+      setSeverity('error');
+      setMessageAlert(error.response.data.message);
+      setOpenAlert(true);
+    });
+  };
+
   return (
     <>
       <Typography variant='h5'>Cart</Typography>
@@ -135,7 +163,7 @@ function Cart() {
                 </TableRow>
                 <TableRow>
                   <TableCell align='right' colSpan={5}>
-                    <Button color='success' variant='contained'>Check out</Button>
+                    <Button color='success' variant='contained' onClick={handleCheckOut}>Check out</Button>
                   </TableCell>
                 </TableRow>
               </>
@@ -146,6 +174,8 @@ function Cart() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <AlertMessage openAlert={openAlert} setOpenAlert={setOpenAlert} alertMessage={messageAlert} severity={severity} />
     </>
   );
 }
