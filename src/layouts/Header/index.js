@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import { Button } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,7 +42,6 @@ function Header() {
           method: 'GET',
           url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/carts/${res.data.username}`,
         }).then((res) => {
-          console.log(res);
           const action = updateQuantityCart(res.data.length);
           dispatch(action);
         }).catch((error) => {
@@ -110,6 +110,11 @@ function Header() {
                       window.location.href = '/cart';
                     }} />
                   </div>
+                  <Button variant='contained' color='primary' style={{ marginRight: 10 }} onClick={() => {
+                    window.location.href = '/history-order';
+                  }}>
+                    History Order
+                  </Button>
                   <a class='navbar-brand' style={{ fontWeight: 'bold' }}>{currentUser.username}</a>
                   <button class='btn btn-outline-success' onClick={() => {
                     localStorage.clear();
