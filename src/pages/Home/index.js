@@ -85,38 +85,41 @@ function Home() {
 
   return (
     <div className='mt-2'>
-      <Grid container spacing={2}>
-        {listPhone.map((phone, index) => (
-          <Grid item xs={3} key={index}>
-            <Card sx={{ maxWidth: 300, mr: 2 }}>
-              <CardMedia
-                component='img'
-                height='140'
-                image={convertDriveURL({ url: phone.image })}
-                alt={phone.name}
-              />
-              <CardContent>
-                <Typography variant='h5' component='div'>
-                  {phone.name}
-                </Typography>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant='body1' fontWeight='bold'>
-                    Price: {phone.price}$
+      {listPhone.length > 0
+        ? <Grid container spacing={2}>
+          {listPhone.map((phone, index) => (
+            <Grid item xs={3} key={index}>
+              <Card sx={{ maxWidth: 300, mr: 2 }}>
+                <CardMedia
+                  component='img'
+                  height='140'
+                  image={convertDriveURL({ url: phone.image })}
+                  alt={phone.name}
+                />
+                <CardContent>
+                  <Typography variant='h5' component='div'>
+                    {phone.name}
                   </Typography>
-                  <Typography variant='body1'>
-                    Quantity: {phone.quantity}
-                  </Typography>
-                </div>
-              </CardContent>
-              <CardActions>
-                <Button onClick={() => handleAddToCart(phone)}>
-                  Add to cart
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant='body1' fontWeight='bold'>
+                      Price: {phone.price}$
+                    </Typography>
+                    <Typography variant='body1'>
+                      Quantity: {phone.quantity}
+                    </Typography>
+                  </div>
+                </CardContent>
+                <CardActions>
+                  <Button onClick={() => handleAddToCart(phone)}>
+                    Add to cart
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+        : <Typography style={{ fontWeight: 'bold', textAlign: 'center' }}>No records found</Typography>
+      }
 
       <AlertMessage openAlert={openAlert} setOpenAlert={setOpenAlert} alertMessage={messageAlert} severity={severity} />
     </div>
