@@ -139,7 +139,7 @@ function Cart() {
                   <TableRow key={index}>
                     <TableCell scope='row'>{index + 1}</TableCell>
                     <TableCell align='center'>{item.name}</TableCell>
-                    <TableCell align='center'>{item.price}</TableCell>
+                    <TableCell align='center'>{item.price}$</TableCell>
                     <TableCell align='center'>
                       <RemoveCircleOutlineIcon sx={{
                         '&:hover': {
@@ -153,13 +153,13 @@ function Cart() {
                         }
                       }} onClick={() => handleIncreaseQuantity(item)} />
                     </TableCell>
-                    <TableCell align='center'>{item.price * item.quantity}</TableCell>
+                    <TableCell align='center'>{item.price * item.quantity}$</TableCell>
                   </TableRow>
                 ))}
                 <TableRow>
                   <TableCell align='center' colSpan={3} style={{ fontWeight: 'bold' }}>Total:</TableCell>
                   <TableCell align='center'>{totalQuantity}</TableCell>
-                  <TableCell align='center'>{totalPrice}</TableCell>
+                  <TableCell align='center'>{totalPrice}$</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell align='right' colSpan={5}>

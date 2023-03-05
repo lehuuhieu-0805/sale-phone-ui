@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import React from 'react';
 import Header from './Header';
 
@@ -5,9 +6,9 @@ function Layouts({ children }) {
   return (
     <div>
       <Header />
-      <div className='container'>
+      <Box component='nav' className='container' style={{ marginTop: 80 }}>
         {children}
-      </div>
+      </Box>
     </div>
   );
 }

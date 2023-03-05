@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { Button } from '@mui/material';
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,8 +68,8 @@ function Header() {
   };
 
   return (
-    <>
-      <nav class='navbar navbar-expand-lg bg-body-tertiary'>
+    <Box >
+      {/* <nav class='navbar navbar-expand-lg bg-body-tertiary'>
         <div class='container-fluid'>
           <a class='navbar-brand'>Sale Phone</a>
           <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
@@ -80,41 +80,31 @@ function Header() {
               <li class='nav-item'>
                 <a class='nav-link active' aria-current='page' href='/home'>Home</a>
               </li>
-              {/* <li class='nav-item'>
-                <a class='nav-link' href='#'>Link</a>
-              </li> */}
-              {/* <li class='nav-item dropdown'>
-                <a class='nav-link dropdown-toggle' href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
-                  Dropdown
-                </a>
-                <ul class='dropdown-menu'>
-                  <li><a class='dropdown-item' href='#'>Action</a></li>
-                  <li><a class='dropdown-item' href='#'>Another action</a></li>
-                  <li><hr class='dropdown-divider' /></li>
-                  <li><a class='dropdown-item' href='#'>Something else here</a></li>
-                </ul>
-              </li> */}
             </ul>
             <div className='d-flex'>
               {currentUser
                 ? (<>
-                  <div className='cart-icon' style={{ position: 'relative' }}>
-                    <span className='count' style={{ position: 'absolute', right: 8, color: 'red', fontWeight: 'bold' }}>{quantityCart}</span>
-                    <ShoppingCartOutlinedIcon style={{
-                      marginTop: 8, marginRight: 16
-                    }} sx={{
-                      '&:hover': {
-                        cursor: 'pointer'
-                      }
-                    }} onClick={() => {
-                      window.location.href = '/cart';
-                    }} />
-                  </div>
-                  <Button variant='contained' color='primary' style={{ marginRight: 10 }} onClick={() => {
-                    window.location.href = '/history-order';
-                  }}>
-                    History Order
-                  </Button>
+                  {currentUser.role === 'USER' ? (
+                    <>
+                      <div className='cart-icon' style={{ position: 'relative' }}>
+                        <span className='count' style={{ position: 'absolute', right: 8, color: 'red', fontWeight: 'bold' }}>{quantityCart}</span>
+                        <ShoppingCartOutlinedIcon style={{
+                          marginTop: 8, marginRight: 16
+                        }} sx={{
+                          '&:hover': {
+                            cursor: 'pointer'
+                          }
+                        }} onClick={() => {
+                          window.location.href = '/cart';
+                        }} />
+                      </div>
+                      <Button variant='contained' color='primary' style={{ marginRight: 10 }} onClick={() => {
+                        window.location.href = '/history-order';
+                      }}>
+                        History Order
+                      </Button>
+                    </>
+                  ) : null}
                   <a class='navbar-brand' style={{ fontWeight: 'bold' }}>{currentUser.username}</a>
                   <button class='btn btn-outline-success' onClick={() => {
                     localStorage.clear();
@@ -130,11 +120,67 @@ function Header() {
             </div>
           </div>
         </div>
-      </nav>
+      </nav> */}
+
+      <AppBar component='nav' >
+        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="h6" component="div" sx={{ mr: 2 }}>
+              Sale Phone
+            </Typography>
+            <Typography variant="body2" component="div" sx={{
+              '&:hover': {
+                cursor: 'pointer'
+              }
+            }} onClick={() => {
+              window.location.href = '/home';
+            }}>
+              Home
+            </Typography>
+          </Box>
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            {currentUser
+              ? (<>
+                {currentUser.role === 'USER'
+                  ? (<>
+                    <div className='cart-icon' style={{ position: 'relative' }}>
+                      <span className='count' style={{ position: 'absolute', right: 8, color: 'red', fontWeight: 'bold' }}>{quantityCart}</span>
+                      <ShoppingCartOutlinedIcon style={{
+                        marginTop: 8, marginRight: 16
+                      }} sx={{
+                        '&:hover': {
+                          cursor: 'pointer'
+                        }
+                      }} onClick={() => {
+                        window.location.href = '/cart';
+                      }} />
+                    </div>
+                    <Button variant='contained' color="info" style={{ marginRight: 10 }} onClick={() => {
+                      window.location.href = '/history-order';
+                    }}>
+                      History Order
+                    </Button>
+                  </>)
+                  : null}
+                <Typography variant='subtitle1' fontWeight='bold' color='inherit' style={{ marginRight: 10 }}>{currentUser.username}</Typography>
+                <Button color="error" variant='contained' onClick={() => {
+                  localStorage.clear();
+                  let action = removeUser();
+                  dispatch(action);
+
+                  action = removeQuantityCart();
+                  dispatch(action);
+                  window.location.href = '/home';
+                }}>Logout</Button>
+              </>)
+              : (<Button color="inherit" onClick={() => setOpenLoginDialog(true)}>Login</Button>)}
+          </Box>
+        </Toolbar>
+      </AppBar>
 
       <Login open={openLoginDialog} setOpen={setOpenLoginDialog} handleChangeDialogMode={handleChangeDialogMode} />
       <Register open={openRegisterDialog} setOpen={setOpenRegisterDialog} handleChangeDialogMode={handleChangeDialogMode}></Register>
-    </>
+    </Box>
   );
 }
 
