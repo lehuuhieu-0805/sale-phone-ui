@@ -289,7 +289,7 @@ function Home() {
                       <TableRow key={index}>
                         <TableCell scope='row'>{index + 1}</TableCell>
                         <TableCell align='center'>{item.name}</TableCell>
-                        <TableCell align='center'>{item.price}</TableCell>
+                        <TableCell align='center'>{item.price}$</TableCell>
                         <TableCell align='center'>{item.quantity}</TableCell>
                         <TableCell align='center'>
                           <img src={convertDriveURL({ url: item.image })} alt={item.name} width='150' />
