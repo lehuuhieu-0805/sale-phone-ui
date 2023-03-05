@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
@@ -42,6 +42,7 @@ function Home() {
   });
   const [reloadData, setReloadData] = useState(false);
   const [loadingButton, setLoadingButton] = useState(false);
+  const [phone, setPhone] = useState(null);
 
   const defaultValues = {
     name: '',
@@ -55,7 +56,7 @@ function Home() {
     mode: 'onChange'
   });
 
-  const { handleSubmit, register, formState: { errors }, reset } = method;
+  const { handleSubmit, register, formState: { errors }, reset, setValue } = method;
 
   useEffect(() => {
     if (role === 'ADMIN') {
@@ -137,52 +138,100 @@ function Home() {
 
   const onSubmit = (data) => {
     console.log(data);
-    if (image.file === null) {
-      setImage({
-        file: null,
-        error: true
-      });
-      return;
-    }
     setLoadingButton(true);
 
-    const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('price', data.price);
-    formData.append('quantity', data.quantity);
-    formData.append('image', image.file);
-    formData.append('status', 'ACTIVE');
-
-    axios({
-      method: 'POST',
-      url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      data: formData
-    }).then(() => {
-      setReloadData(!reloadData);
-      setSeverity('success');
-      setMessageAlert('Create a phone successfully');
-      setOpenAlert(true);
-      setLoadingButton(false);
-      setOpenDialog(false);
-      reset();
-      setImage({
-        file: null,
-        error: false
-      });
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
+    // update a phone
+    if (phone) {
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('price', data.price);
+      formData.append('quantity', data.quantity);
+      if (image.file) {
+        formData.append('image', image.file);
       }
-      setImagePreview(null);
-    }).catch((error) => {
-      console.log(error);
-      setSeverity('error');
-      setMessageAlert('Create a phone failed');
-      setOpenAlert(true);
-      setLoadingButton(false);
-    });
+      formData.append('status', phone.status);
+
+      axios({
+        method: 'PUT',
+        url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones/${phone.id}`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        data: formData
+      }).then(() => {
+        setSeverity('success');
+        setMessageAlert('Update a phone successfully');
+        setOpenAlert(true);
+        setLoadingButton(false);
+        setOpenDialog(false);
+        setPhone(null);
+        if (image) {
+          setImage({
+            file: null,
+            error: false
+          });
+        }
+        setImagePreview(null);
+        setReloadData(!reloadData);
+        reset();
+      }).catch((error) => {
+        console.log(error);
+        setSeverity('error');
+        setMessageAlert('Update a phone failed');
+        setOpenAlert(true);
+        setLoadingButton(false);
+        setOpenDialog(false);
+        setPhone(null);
+      });
+
+    } else {
+      // create a new phone
+      if (image.file === null) {
+        setImage({
+          file: null,
+          error: true
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('price', data.price);
+      formData.append('quantity', data.quantity);
+      formData.append('image', image.file);
+      formData.append('status', 'ACTIVE');
+
+      axios({
+        method: 'POST',
+        url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones`,
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        data: formData
+      }).then(() => {
+        setReloadData(!reloadData);
+        setSeverity('success');
+        setMessageAlert('Create a phone successfully');
+        setOpenAlert(true);
+        setLoadingButton(false);
+        setOpenDialog(false);
+        reset();
+        setImage({
+          file: null,
+          error: false
+        });
+        if (imagePreview) {
+          URL.revokeObjectURL(imagePreview);
+        }
+        setImagePreview(null);
+      }).catch((error) => {
+        console.log(error);
+        setSeverity('error');
+        setMessageAlert('Create a phone failed');
+        setOpenAlert(true);
+        setLoadingButton(false);
+      });
+    }
   };
 
   const onError = (data) => {
@@ -193,6 +242,22 @@ function Home() {
         error: true
       });
     }
+  };
+
+  const handleGetPhone = (phone) => {
+    axios({
+      method: 'GET',
+      url: `${api.baseUrl}/${api.configPathType.api}/${api.versionType.v1}/phones/${phone.id}`,
+    }).then((res) => {
+      setPhone(res.data);
+      setValue('name', res.data.name);
+      setValue('price', res.data.price);
+      setValue('quantity', res.data.quantity);
+      setImagePreview(convertDriveURL({ url: res.data.image }));
+      setOpenDialog(true);
+    }).catch((error) => {
+      console.log(error);
+    });
   };
 
   return (
@@ -231,7 +296,7 @@ function Home() {
                         </TableCell>
                         <TableCell align='center'>{item.status}</TableCell>
                         <TableCell align='center'>
-                          <Button variant='outlined' color='info'>Update</Button>
+                          <Button variant='outlined' color='info' onClick={() => handleGetPhone(item)}>Update</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -250,9 +315,7 @@ function Home() {
               URL.revokeObjectURL(imagePreview);
             }
           }} fullWidth maxWidth='sm'>
-            <DialogTitle>
-              Create a new phone
-            </DialogTitle>
+            <DialogTitle>{phone ? 'Update a phone' : 'Create a phone'}</DialogTitle>
             <form onSubmit={handleSubmit(onSubmit, onError)}>
               <DialogContent style={{ paddingTop: 10 }}>
                 <TextField label='Name' {...register('name')} fullWidth />
@@ -261,6 +324,22 @@ function Home() {
                 <p style={{ color: 'red' }}>{errors.price?.message}</p>
                 <TextField style={{ marginTop: 10 }} label='Quantity' type='number' {...register('quantity')} fullWidth />
                 <p style={{ color: 'red' }}>{errors.quantity?.message}</p>
+                {phone ? (
+                  <FormControl fullWidth>
+                    <Select
+                      value={phone.status}
+                      onChange={(e) => {
+                        setPhone({
+                          ...phone,
+                          status: e.target.value
+                        });
+                      }}
+                    >
+                      <MenuItem value='ACTIVE'>Active</MenuItem>
+                      <MenuItem value='IN_ACTIVE'>In active</MenuItem>
+                    </Select>
+                  </FormControl>
+                ) : null}
                 <label htmlFor='upload-image' style={{ marginTop: 10 }}>
                   <input id='upload-image' name='upload-image' type='file' style={{ display: 'none' }} onChange={(e) => {
                     const preview = URL.createObjectURL(e.target.files[0]);
@@ -289,8 +368,11 @@ function Home() {
                       error: false
                     });
                   }
+                  if (phone) {
+                    setPhone(null);
+                  }
                 }} variant='outlined'>Cancel</Button>
-                <LoadingButton loading={loadingButton} variant='contained' color='success' type='submit'>Create</LoadingButton>
+                <LoadingButton loading={loadingButton} variant='contained' color='success' type='submit'>{phone ? 'Update' : 'Create'}</LoadingButton>
               </DialogActions>
             </form>
           </Dialog>
