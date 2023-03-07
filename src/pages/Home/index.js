@@ -292,7 +292,7 @@ function Home() {
                         <TableCell align='center'>{item.price}$</TableCell>
                         <TableCell align='center'>{item.quantity}</TableCell>
                         <TableCell align='center'>
-                          <img src={convertDriveURL({ url: item.image })} alt={item.name} width='150' />
+                          <img src={convertDriveURL({ url: item.image })} alt={item.name} width='150' referrerpolicy="no-referrer" />
                         </TableCell>
                         <TableCell align='center'>{item.status}</TableCell>
                         <TableCell align='center'>
@@ -352,7 +352,7 @@ function Home() {
                   <Button variant='contained' color='primary' component='span'>Upload image</Button>
                 </label>
                 {image.error ? (<p style={{ color: 'red' }}>Image is required</p>) : null}
-                {imagePreview ? (<img src={imagePreview} alt='hinh anh' style={{ marginTop: 10 }} width={535} />) : null}
+                {imagePreview ? (<img src={imagePreview} alt='hinh anh' style={{ marginTop: 10 }} width={535} referrerpolicy="no-referrer" />) : null}
               </DialogContent>
               <DialogActions>
                 <Button onClick={() => {
@@ -389,6 +389,7 @@ function Home() {
                       height='140'
                       image={convertDriveURL({ url: phone.image })}
                       alt={phone.name}
+                      referrerpolicy="no-referrer"
                     />
                     <CardContent>
                       <Typography variant='h5' component='div'>

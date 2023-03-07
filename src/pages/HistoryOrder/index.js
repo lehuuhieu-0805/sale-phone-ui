@@ -40,7 +40,7 @@ function HistoryOrder() {
               <Card sx={{ marginBottom: 1 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={2}>
-                    <CardMedia image={convertDriveURL({ url: orderItem.phone.image })} component='img' sx={{ width: 200 }} />
+                    <CardMedia image={convertDriveURL({ url: orderItem.phone.image })} component='img' sx={{ width: 200 }} referrerpolicy="no-referrer" />
                   </Grid>
                   <Grid item xs={10}>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
